@@ -50,6 +50,8 @@ sequenceDiagrams:
 
 **Implementation & Results**:
 
+<!--more-->
+
 ## Inctroduction
 
 **Background**:
@@ -67,5 +69,3 @@ sequenceDiagrams:
 ## Experiment results
 
 ## Conclusion
-
-<!--more-->
