@@ -66,6 +66,6 @@ sequenceDiagrams:
 
 ## Algorithm
 
-## Experiment results
+## Experiment Results
 
 ## Conclusion
