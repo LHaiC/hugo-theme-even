@@ -67,6 +67,53 @@
     <link rel="stylesheet" href="{{ "lib/js-sequence-diagrams/sequence-diagram-2.0.1.min.css" | relURL }}" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
   {{- end -}}
 {{- end }}
+
+<!-- mermaid -->
+{{- if and (or .Params.mermaid (and .Site.Params.mermaid (ne .Params.mermaid false))) (or .IsPage .IsHome) -}}
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const keywords = ['graph', 'flowchart', 'sequenceDiagram', 'classDiagram', 'stateDiagram', 'erDiagram', 'gantt', 'journey', 'pie', 'requirementDiagram', 'gitGraph'];
+      
+      function isMermaid(text) {
+        text = text.trim();
+        // Check if the text starts with any of the mermaid keywords
+        return keywords.some(k => text.startsWith(k));
+      }
+
+      function convertToMermaid(block) {
+        const source = block.textContent;
+        const div = document.createElement('div');
+        div.className = 'mermaid';
+        div.textContent = source;
+        div.style.textAlign = 'center';
+        
+        // Find the outer container to replace
+        // Hugo with linenos=table wraps code in a table inside a div.highlight
+        let container = block.closest('.highlight');
+        // Fallback for simple <pre><code> wrappers
+        if (!container) container = block.closest('pre');
+        
+        if (container) {
+          container.parentNode.replaceChild(div, container);
+        }
+      }
+
+      // 1. Find blocks correctly tagged as mermaid (if render hook works partially)
+      document.querySelectorAll('code.language-mermaid').forEach(convertToMermaid);
+
+      // 2. Find blocks tagged as fallback but containing mermaid syntax (the "Rescue" logic)
+      document.querySelectorAll('code.language-fallback').forEach(block => {
+        if (isMermaid(block.textContent)) {
+          convertToMermaid(block);
+        }
+      });
+      
+      mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    });
+  </script>
+{{- end -}}
+
 {{ $even := resources.Get "js/even.js" }}
 {{ $main := resources.Get "js/main.js" }}
 {{ $js := slice $even $main | resources.Concat "js/main.js" | minify | fingerprint }}
