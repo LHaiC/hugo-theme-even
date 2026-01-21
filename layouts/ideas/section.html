@@ -1,0 +1,154 @@
+{{ define "content" }}
+<style>
+.ideas-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ideas-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.idea-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0,0,0,0.04);
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+.idea-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+.idea-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.idea-date {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.idea-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1a1a2e;
+}
+
+.idea-description {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.idea-topics {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.topic {
+  background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+  padding: 0.3rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #5b21b6;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  border: 1px solid rgba(91, 33, 182, 0.1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.topic:hover {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #888;
+}
+</style>
+
+<div class="ideas-container">
+  <h1 class="page-title">💡 Ideas</h1>
+  
+  {{ if not .RegularPages }}
+    <div class="empty-state">
+      <p>暂无 Ideas，开始记录你的想法吧！</p>
+    </div>
+  {{ else }}
+    <div class="ideas-grid">
+      {{ range .RegularPages }}
+        <a href="{{ .Permalink }}" class="idea-card">
+          <div class="idea-meta">
+            <span class="idea-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              {{ .Date.Format "2006-01-02" }}
+            </span>
+            {{ with .Params.topics }}
+              <span>· {{ len . }} topics</span>
+            {{ end }}
+          </div>
+          <h2 class="idea-title">{{ .Title }}</h2>{{- with .Description }}<p class="idea-description">{{ . }}</p>{{ end }}{{- with .Params.topics }}<div class="idea-topics">{{- range first 4 . }}<span class="topic" data-topic-url="{{ "/fishblog/topics/" | relLangURL }}{{ . | urlize }}/">{{ . }}</span>{{- end }}</div>{{ end -}}
+        </a>
+      {{ end }}
+    </div>
+  {{ end }}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle topic clicks - navigate without triggering parent card
+  document.querySelectorAll('.topic').forEach(function(topic) {
+    topic.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      var url = this.getAttribute('data-topic-url');
+      if (url) {
+        window.location.href = url;
+      }
+    });
+  });
+});
+</script>
+{{ end }}
